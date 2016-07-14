@@ -13,16 +13,17 @@ function createClient (firebase, clientPath, queuePath, options) {
     options = {};
   }
   return function (type, payload) {
+    var database = firebase.database().ref();
     if (!payload) {
       payload = {};
     }
     var auth, clientRef, clientId, client;
     return Promise.resolve().then(function () {
-      auth = firebase.getAuth();
-      return firebase.child(clientPath).push({created: Firebase.ServerValue.TIMESTAMP, auth: auth});
+      auth = firebase.auth().currentUser;
+      return database.child(clientPath).push({created: Date.now(), auth: {uid: auth.uid, isAnonymous: auth.isAnonymous}});
     }).then(function (clientSnap) {
-      clientId = clientSnap.key();
-      clientRef = firebase.child(clientPath + '/' + clientId);
+      clientId = clientSnap.key;
+      clientRef = database.child(clientPath + '/' + clientId);
       return clientRef.once('value');
     }).then(function (clientSnap) {
       client = clientSnap.val();
@@ -48,9 +49,9 @@ function createClient (firebase, clientPath, queuePath, options) {
           resolve(response);
         });
 
-        const data = {payload: payload, clientId: clientId, type: type, created: Firebase.ServerValue.TIMESTAMP};
+        const data = {payload: payload, clientId: clientId, type: type, created: Date.now()};
 
-        firebase.child(queuePath + '/tasks').push(data);
+        database.child(queuePath + '/tasks').push(data);
       });
     });
   }

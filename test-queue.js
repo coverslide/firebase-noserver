@@ -1,7 +1,7 @@
 'use strict';
 
 const Firebase = require('firebase');
-const firebase  = new Firebase("https://serverless-test.firebaseio.com");
+const firebase  = Firebase.initializeApp({ databaseURL: "https://serverless-test.firebaseio.com"});
 
 const createQueue = require('./index');
 

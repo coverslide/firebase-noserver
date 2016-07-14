@@ -8,13 +8,14 @@ var EventEmitter = require('events').EventEmitter;
 var Queue = require('firebase-queue');
 
 function createQueue (firebase, clientPath, queuePath, jobMap, options) {
+  var database = firebase.database();
   var queue = new EventEmitter();
-  queue.queue = new Queue(firebase.child(queuePath), function (data, progress, jobSuccess, jobFailure) {
+  queue.queue = new Queue(database.ref(queuePath), function (data, progress, jobSuccess, jobFailure) {
     var auth, clientRef, clientId, responseRef, client, response, job;
     if (!data.clientId) {
       return jobFailure('clientId required');
     }
-    clientRef = firebase.child(clientPath + '/' + data.clientId);
+    clientRef = database.ref(clientPath + '/' + data.clientId);
     responseRef = clientRef.child('response');
 
     return Promise.resolve().then(function () {
@@ -29,7 +30,7 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
       if (!job || typeof job != 'function') {
         return Promise.reject('Unrecognized job type: ' + data.type);
       }
-      return job(client, data.payload);
+      return job(client, data.payload, firebase);
     }).then(function (responseData) {
       response = responseData || false;
       return responseRef.set(response);
@@ -45,10 +46,10 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
   });
 
   queue.queueCleanup = function (threshold) {
-    return firebase.child(queuePath + '/tasks').orderByChild('created').endAt(Date.now() - threshold).once('value').then(function (snap) {
+    return database.ref(queuePath + '/tasks').orderByChild('created').endAt(Date.now() - threshold).once('value').then(function (snap) {
       const values = snap.val();
       queue.emit('queueCleanup', values);
-      return Promise.all(Object.keys(values).map(key => firebase.child(queuePath + '/tasks/' + key).remove()));
+      return Promise.all(Object.keys(values).map(key => database.ref(queuePath + '/tasks/' + key).remove()));
     });
   }
 
@@ -67,10 +68,10 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
   }
 
   queue.clientCleanup = function (threshold) {
-    return firebase.child(clientPath).orderByChild('created').endAt(Date.now() - threshold).once('value').then(function (snap) {
+    return database.ref(clientPath).orderByChild('created').endAt(Date.now() - threshold).once('value').then(function (snap) {
       const values = snap.val();
       queue.emit('clientCleanup', values);
-      return Promise.all(Object.keys(values).map(key => firebase.child(clientPath + '/' + key).remove()));
+      return Promise.all(Object.keys(values).map(key => database.ref(clientPath + '/' + key).remove()));
     });
   }
 
