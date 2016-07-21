@@ -1,0 +1,30 @@
+path / {
+  read() { false }
+  write() { false }
+}
+
+path /clients/{clientId} {
+  read() { isCurrentUser(this.auth.uid) }
+  write() {
+    !this.exists() && (
+      isCurrentUser(this.auth.uid)
+    )
+  }
+}
+
+path /clients/{clientId}/response {
+  read() { isCurrentUser(this.auth.uid) }
+  write() { isCurrentUser(this.auth.uid) }
+}
+
+path /queues/clients/tasks {
+  read() { false }
+  write() {
+    this == null && (
+      isCurrentUser(this.auth.uid)
+    )
+  }
+  index() { [ "_state" ] }
+}
+
+isCurrentUser(uid) { auth != null && auth.uid == uid }

@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "clients": {
+      "$clientId": {
+        ".read": "auth != null && auth.uid == data.child('auth').child('uid').val()",
+        ".write": "!newData.child('exists')() && (auth != null && auth.uid == newData.child('auth').child('uid').val())",
+        "response": {
+          ".read": "auth != null && auth.uid == data.child('auth').child('uid').val()",
+          ".write": "auth != null && auth.uid == newData.child('auth').child('uid').val()"
+        }
+      }
+    },
+    "queues": {
+      "clients": {
+        "tasks": {
+          ".write": "newData.val() == null && (auth != null && auth.uid == newData.child('auth').child('uid').val())",
+          ".indexOn": [
+            "_state"
+          ]
+        }
+      }
+    }
+  }
+}
