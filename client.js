@@ -20,7 +20,7 @@ function createClient (firebase, clientPath, queuePath, options) {
     var auth, clientRef, clientId, client;
     return Promise.resolve().then(function () {
       auth = firebase.auth().currentUser;
-      return database.child(clientPath).push({created: Date.now(), auth: {uid: auth.uid, isAnonymous: auth.isAnonymous}});
+      return database.child(clientPath).push({created: Date.now(), auth: auth && {uid: auth.uid, isAnonymous: auth.isAnonymous}});
     }).then(function (clientSnap) {
       clientId = clientSnap.key;
       clientRef = database.child(clientPath + '/' + clientId);
