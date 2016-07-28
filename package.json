@@ -1,6 +1,6 @@
 {
-  "name": "firebase-serverless",
-  "version": "3.0.0",
+  "name": "firebase-noserver",
+  "version": "3.0.0-alpha1",
   "description": "",
   "main": "index.js",
   "scripts": {

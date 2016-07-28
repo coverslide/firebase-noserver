@@ -1,4 +1,4 @@
-firebase-serverless
+firebase-noserver
 ===================
 
 A serverless request / response architecture based on firebase and firebase
@@ -24,7 +24,7 @@ Installation
 ============
 
 ```
-npm install --save firebase-serverless
+npm install --save firebase-noserver
 ```
 
 Quick Start
@@ -36,7 +36,7 @@ For the queue side:
 
 ```
 const firebase = require('firebase');
-const createQueue = require('firebase-serverless');
+const createQueue = require('firebase-noserver');
 
 firebase.initializeApp({...});
 
@@ -63,7 +63,7 @@ const queue = createQueue(firebase, 'clients', 'queues/clients', jobMap, options
 And for the client side:
 ```
 const firebase = require('firebase');
-const createClient = require('firebase-serverless/client');
+const createClient = require('firebase-noserver/client');
 
 firebase.initializeApp({...});
 
