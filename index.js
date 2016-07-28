@@ -1,7 +1,7 @@
 'use strict';
 
 if (typeof Promise == 'undefined' || typeof Promise.resolve == 'undefined') {
-  throw new Error('ES6 Promises are required to use firebase-serverless');
+  throw new Error('ES6 Promises are required to use firebase-noserver');
 }
 
 var EventEmitter = require('events').EventEmitter;
