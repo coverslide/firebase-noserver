@@ -1,14 +1,13 @@
 {
   "name": "firebase-noserver",
-  "version": "3.0.0-alpha3",
+  "version": "3.0.0-alpha4",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "peerDependencies": {
-    "firebase": "^3.x",
-    "firebase-queue": "^1.x"
+    "firebase": "^3.x"
   },
   "author": "",
   "license": "ISC"
