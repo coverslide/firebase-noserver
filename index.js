@@ -37,7 +37,7 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
       jobSuccess(response);
       queue.emit('success', {client: client, data: data, response: response});
     }).catch(function (err) {
-      response = {_error: err.message || err};
+      response = {_error: err.message || err, _error_details: err};
       responseRef.set(response);
       jobFailure(err);
       queue.emit('failure', {client: client, data: data, response: response});
