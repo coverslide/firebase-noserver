@@ -1,6 +1,6 @@
 {
   "name": "firebase-noserver",
-  "version": "3.0.0-alpha4",
+  "version": "3.0.0-alpha5",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,5 +10,9 @@
     "firebase": "^3.x"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^3.0.0",
+    "mockfirebase": "^0.12.0"
+  }
 }
