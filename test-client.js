@@ -10,7 +10,8 @@ const createRequest = createClient(firebase, 'clients', 'queues/clients');
 const trace = console.trace.bind(console);
 const log = console.log.bind(console)
 
-firebase.auth().signInAnonymously().then(() => 
+//firebase.auth().signInAnonymously().then(() => 
+Promise.resolve().then(() => 
 Promise.all([
   createRequest('ping').then(log).catch(trace),
   createRequest('echo', Math.random()).then(log).catch(trace),

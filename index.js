@@ -6,6 +6,7 @@ if (typeof Promise == 'undefined' || typeof Promise.resolve == 'undefined') {
 
 var EventEmitter = require('events').EventEmitter;
 var Queue = require('firebase-queue');
+var DetailedError = require('./detailedError');
 
 function createQueue (firebase, clientPath, queuePath, jobMap, options) {
   var database = firebase.database();
@@ -38,7 +39,7 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
       jobSuccess(response);
       queue.emit('success', {client: client, data: data, response: response});
     }).catch(function (err) {
-      response = {_error: err.message || err, _errorDetails: err};
+      response = {_error: err.message || err, _errorDetails: err instanceof DetailedError ? err : null};
       responseRef.set(response);
       jobFailure(err);
       queue.emit('failure', {client: client, data: data, response: response});
@@ -47,9 +48,9 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
 
   queue.queueCleanup = function (threshold) {
     return database.ref(queuePath + '/tasks').orderByChild('created').endAt(Date.now() - threshold).once('value').then(function (snap) {
-      const values = snap.val();
+      var values = snap.val();
       queue.emit('queueCleanup', values);
-      return Promise.all(Object.keys(values).map(key => database.ref(queuePath + '/tasks/' + key).remove()));
+      return Promise.all(Object.keys(values).map(function(key){database.ref(queuePath + '/tasks/' + key).remove();}));
     });
   }
 
@@ -69,9 +70,9 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
 
   queue.clientCleanup = function (threshold) {
     return database.ref(clientPath).orderByChild('created').endAt(Date.now() - threshold).once('value').then(function (snap) {
-      const values = snap.val();
+      var values = snap.val();
       queue.emit('clientCleanup', values);
-      return Promise.all(Object.keys(values).map(key => database.ref(clientPath + '/' + key).remove()));
+      return Promise.all(Object.keys(values).map(function(key){database.ref(clientPath + '/' + key).remove();}));
     });
   }
 
@@ -93,17 +94,5 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
 }
 
 module.exports = createQueue;
+module.exports.DetailedError = DetailedError;
 
-createQueue.DetailError = class DetailError extends Error {
-  constructor (message, details) {
-    super(message);
-    this.details = details;
-  }
-
-  toJSON () {
-    return {
-      message: this.message,
-      details: this.details
-    };
-  }
-};

@@ -4,7 +4,7 @@ if (typeof Promise == 'undefined' || typeof Promise.resolve == 'undefined') {
   throw new Error('ES6 Promises are required to use firebase-noserver');
 }
 
-var Firebase = require('firebase');
+var DetailedError = require('./detailedError');
 
 var DEFAULT_TIMEOUT = 5000;
 
@@ -20,7 +20,7 @@ function createClient (firebase, clientPath, queuePath, options) {
     var auth, clientRef, clientId, client;
     return Promise.resolve().then(function () {
       auth = firebase.auth().currentUser;
-      return database.child(clientPath).push({created: Date.now(), auth: auth && {uid: auth.uid, isAnonymous: auth.isAnonymous}});
+      return database.child(clientPath).push({ created: Date.now(), auth: auth ? {uid: auth.uid, isAnonymous: auth.isAnonymous} : null });
     }).then(function (clientSnap) {
       clientId = clientSnap.key;
       clientRef = database.child(clientPath + '/' + clientId);
@@ -29,7 +29,7 @@ function createClient (firebase, clientPath, queuePath, options) {
       client = clientSnap.val();
       return new Promise(function (resolve, reject) {
         var responseRef = clientRef.child('response');
-        var timeout = setTimeout(() => {
+        var timeout = setTimeout(function () {
           responseRef.off('value');
           clientRef.remove();
           reject('Client timed out');
@@ -44,12 +44,16 @@ function createClient (firebase, clientPath, queuePath, options) {
           responseRef.off('value');
           clientRef.remove();
           if (response._error) {
-            reject(new Error(response._error));
+            if (response._errorDetails) {
+              reject(new DetailedError(response._error, response._errorDetails));
+            } else {
+              reject(new Error(response._error));
+            }
           }
           resolve(response);
         });
 
-        const data = {payload: payload, clientId: clientId, type: type, created: Date.now()};
+        var data = {payload: payload, clientId: clientId, type: type, created: Date.now()};
 
         database.child(queuePath + '/tasks').push(data);
       });
@@ -58,3 +62,5 @@ function createClient (firebase, clientPath, queuePath, options) {
 }
 
 module.exports = createClient;
+
+createClient.DetailedError = DetailedError;

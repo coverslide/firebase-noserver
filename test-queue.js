@@ -5,10 +5,12 @@ const firebase  = Firebase.initializeApp({ databaseURL: "https://serverless-test
 
 const createQueue = require('./index');
 
+const DetailedError = createQueue.DetailedError;
+
 const jobs = {
   ping: () => {return Promise.resolve(Math.random())},
   echo: (client, payload) => {return Promise.resolve(payload)},
-  fail: () => {return Promise.reject('failed')}
+  fail: () => {return Promise.reject(new DetailedError('failed', {a:1,b:2}));}
 }
 
 const queue = createQueue(firebase, 'clients', 'queues/clients', jobs);
