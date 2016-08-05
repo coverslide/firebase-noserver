@@ -9,7 +9,7 @@ actions that require a request-response type of architecture. While you can
 have event listeners for when data changes, that approach can gets rather
 complicated, and it doesn't take into account those changes that should only
 happen in secured data where a user doesn't have access, or actions that have
-no side effects in the data at all. **Firebase-serverless** does the dirty work
+no side effects in the data at all. **Firebase-noserver** does the dirty work
 for you to handle notification of when an action completes, getting a response
 in plain JSON, and error handling when an action fails.
 
