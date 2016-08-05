@@ -9,8 +9,9 @@
   "peerDependencies": {
     "firebase": "^3.x"
   },
-  "author": "",
+  "author": "Richard Hoffman <richard.j.hoffman@gmail.com",
   "license": "ISC",
+  "repository": "coverslide/firebase-noserver",
   "devDependencies": {
     "mocha": "^3.0.0",
     "mockfirebase": "^0.12.0"
