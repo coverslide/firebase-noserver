@@ -4,8 +4,6 @@ if (typeof Promise == 'undefined' || typeof Promise.resolve == 'undefined') {
   throw new Error('ES6 Promises are required to use firebase-noserver');
 }
 
-var DetailedError = require('./detailedError');
-
 var DEFAULT_TIMEOUT = 5000;
 
 function createClient (firebase, clientPath, queuePath, options) {
@@ -45,7 +43,7 @@ function createClient (firebase, clientPath, queuePath, options) {
           clientRef.remove();
           if (response._error) {
             if (response._errorDetails) {
-              reject(new DetailedError(response._error, response._errorDetails));
+              reject(response._errorDetails);
             } else {
               reject(new Error(response._error));
             }
@@ -62,5 +60,3 @@ function createClient (firebase, clientPath, queuePath, options) {
 }
 
 module.exports = createClient;
-
-createClient.DetailedError = DetailedError;

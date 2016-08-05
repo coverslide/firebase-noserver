@@ -6,7 +6,6 @@ if (typeof Promise == 'undefined' || typeof Promise.resolve == 'undefined') {
 
 var EventEmitter = require('events').EventEmitter;
 var Queue = require('firebase-queue');
-var DetailedError = require('./detailedError');
 
 function createQueue (firebase, clientPath, queuePath, jobMap, options) {
   var database = firebase.database();
@@ -39,7 +38,10 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
       jobSuccess(response);
       queue.emit('success', {client: client, data: data, response: response});
     }).catch(function (err) {
-      response = {_error: err.message || err, _errorDetails: err instanceof DetailedError ? err.details : null};
+      response = {_error: err.message || err};
+      if (!(err instanceof Error) && typeof err === 'object') {
+        response._errorDetails = err;
+      }
       responseRef.set(response);
       jobFailure(err);
       queue.emit('failure', {client: client, data: data, response: response});
@@ -94,5 +96,4 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
 }
 
 module.exports = createQueue;
-module.exports.DetailedError = DetailedError;
 
