@@ -1,6 +1,6 @@
 {
   "name": "firebase-noserver",
-  "version": "3.0.0-alpha9",
+  "version": "3.0.0-alpha10",
   "description": "",
   "main": "index.js",
   "scripts": {

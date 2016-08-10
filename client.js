@@ -30,7 +30,7 @@ function createClient (firebase, clientPath, queuePath, options) {
         var timeout = setTimeout(function () {
           responseRef.off('value');
           clientRef.remove();
-          reject('Client timed out');
+          reject({message: 'Client timed out', code: 'noserver/timeout'});
         }, payload._timeout || options.timeout || DEFAULT_TIMEOUT);
         responseRef.on('value', function (responseSnap) {
           var response = responseSnap.val();

@@ -28,7 +28,7 @@ function createQueue (firebase, clientPath, queuePath, jobMap, options) {
       }
       job = jobMap[data.type];
       if (!job || typeof job != 'function') {
-        return Promise.reject('Unrecognized job type: ' + data.type);
+        return Promise.reject({message: 'Unrecognized job type: ' + data.type, code: 'noserver/unrecognized_job', type: data.type});
       }
       return job(client, data.payload, firebase);
     }).then(function (responseData) {
